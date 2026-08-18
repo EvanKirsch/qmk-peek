@@ -2,13 +2,11 @@ pub mod moonlander;
 
 pub struct Board {
     pub macro_name: &'static str,
-    pub arg_count: usize,
     pub render: fn(usize, &[String]) -> String,
 }
 
 pub static BOARDS: &[Board] = &[Board {
     macro_name: moonlander::MACRO,
-    arg_count: moonlander::ARG_COUNT,
     render: moonlander::render,
 }];
 
