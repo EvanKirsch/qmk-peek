@@ -1,5 +1,5 @@
 use crate::keycodes::format_keycode;
-use crate::render::{self, KeyGrid, RenderStyle, ThumbCluster};
+use crate::render::{self, KeyGrid, RenderStyle, ThumbCluster, NO_KEY};
 
 pub const MACRO: &str = "LAYOUT_moonlander";
 pub const ARG_COUNT: usize = 72;
@@ -30,14 +30,14 @@ fn layout(idx: usize, tokens: &[String]) -> Result<KeyGrid, String> {
     let r3r = labels[35..42].to_vec();
 
     let mut r4l: Vec<String> = labels[42..48].to_vec();
-    r4l.push(String::new());
-    let mut r4r: Vec<String> = vec![String::new()];
+    r4l.push(NO_KEY.to_string());
+    let mut r4r: Vec<String> = vec![NO_KEY.to_string()];
     r4r.extend_from_slice(&labels[48..54]);
 
     let mut r5l: Vec<String> = labels[54..59].to_vec();
-    r5l.push(String::new());
-    r5l.push(String::new());
-    let mut r5r: Vec<String> = vec![String::new(), String::new()];
+    r5l.push(NO_KEY.to_string());
+    r5l.push(NO_KEY.to_string());
+    let mut r5r: Vec<String> = vec![NO_KEY.to_string(), NO_KEY.to_string()];
     r5r.extend_from_slice(&labels[61..66]);
 
     let thumb_tl = labels[59].clone();

@@ -16,6 +16,15 @@ pub struct RenderStyle {
     pub thumb_gap: usize,
 }
 
+/// Marks a grid position that has no physical key (e.g. a staggered column
+/// that only exists in some rows), so it's rendered as blank space instead
+/// of an empty boxed cell.
+pub const NO_KEY: &str = "\0";
+
+fn exists(label: &str) -> bool {
+    label != NO_KEY
+}
+
 fn center(s: &str, width: usize) -> String {
     let len = s.chars().count();
     if len >= width {
@@ -32,22 +41,58 @@ fn cell(label: &str, width: usize) -> String {
     center(&truncated, width)
 }
 
-fn hline(n: usize, left: &str, mid: &str, right: &str, w: usize) -> String {
-    let seg = "-".repeat(w);
-    let segs = vec![seg; n];
-    format!("{}{}{}", left, segs.join(mid), right)
+fn hline(cells: &[String], left: char, mid: char, right: char, w: usize) -> String {
+    let n = cells.len();
+    let mut out = String::new();
+    for i in 0..n {
+        let here = exists(&cells[i]);
+        let cap = if i == 0 {
+            if here {
+                left
+            } else {
+                ' '
+            }
+        } else if here || exists(&cells[i - 1]) {
+            mid
+        } else {
+            ' '
+        };
+        out.push(cap);
+        out.push_str(&if here { "-".repeat(w) } else { " ".repeat(w) });
+    }
+    out.push(if exists(&cells[n - 1]) { right } else { ' ' });
+    out
+}
+
+fn content(cells: &[String], w: usize) -> String {
+    let n = cells.len();
+    let mut out = String::new();
+    for i in 0..n {
+        let here = exists(&cells[i]);
+        let bar = if i == 0 {
+            if here {
+                '|'
+            } else {
+                ' '
+            }
+        } else if here || exists(&cells[i - 1]) {
+            '|'
+        } else {
+            ' '
+        };
+        out.push(bar);
+        out.push_str(&if here {
+            cell(&cells[i], w)
+        } else {
+            " ".repeat(w)
+        });
+    }
+    out.push(if exists(&cells[n - 1]) { '|' } else { ' ' });
+    out
 }
 
 fn row(l: &[String], r: &[String], w: usize) -> String {
-    let left = format!(
-        "|{}|",
-        l.iter().map(|x| cell(x, w)).collect::<Vec<_>>().join("|")
-    );
-    let right = format!(
-        "|{}|",
-        r.iter().map(|x| cell(x, w)).collect::<Vec<_>>().join("|")
-    );
-    format!("   {}   {}", left, right)
+    format!("   {}   {}", content(l, w), content(r, w))
 }
 
 pub fn render(grid: &KeyGrid, style: &RenderStyle) -> String {
@@ -59,22 +104,22 @@ pub fn render(grid: &KeyGrid, style: &RenderStyle) -> String {
         if i == 0 {
             out.push(format!(
                 "   {}   {}",
-                hline(l.len(), ",", "+", ",", w),
-                hline(r.len(), ",", "+", ",", w)
+                hline(l, ',', '+', ',', w),
+                hline(r, ',', '+', ',', w)
             ));
         }
         out.push(row(l, r, w));
         if i == n_rows - 1 {
             out.push(format!(
                 "   {}   {}",
-                hline(l.len(), "`", "+", "`", w),
-                hline(r.len(), "`", "+", "`", w)
+                hline(l, '`', '+', '`', w),
+                hline(r, '`', '+', '`', w)
             ));
         } else {
             out.push(format!(
                 "   {}   {}",
-                hline(l.len(), "+", "+", "+", w),
-                hline(r.len(), "+", "+", "+", w)
+                hline(l, '+', '+', '+', w),
+                hline(r, '+', '+', '+', w)
             ));
         }
     }
