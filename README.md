@@ -1,6 +1,8 @@
 # :keyboard: qmk-peek
 A small CLI that reads a QMK `keymap.c` and prints your keyboard's layers as readable ASCII diagrams, without flashing firmware or opening the QMK configurator.
 
+![screenshot](docs/images/Screenshot_0.1.0.png)
+
 ## :spiral_notepad: Implementation Details
 Parses the `LAYOUT_xxx(...)` macro calls out of a QMK keymap source file and renders each layer as an ASCII grid matching the physical key layout.
 
