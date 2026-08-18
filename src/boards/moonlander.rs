@@ -8,7 +8,7 @@ const STYLE: RenderStyle = RenderStyle {
     cell_w: 6,
     thumb_w: 6,
     thumb_indent: 30,
-    thumb_gap: 18,
+    thumb_gap: 5,
 };
 
 fn layout(idx: usize, tokens: &[String]) -> Result<KeyGrid, String> {
